@@ -1,4 +1,4 @@
-# Next Node
+# Next Note
 
 #### A notepad application with AI integration developed using NextJS 14.
 
