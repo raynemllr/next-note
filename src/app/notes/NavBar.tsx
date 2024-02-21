@@ -1,6 +1,6 @@
 'use client'
 
-import AddNoteDialog from '@/components/AddNoteDialog'
+import AddEditNoteDialog from '@/components/AddEditNoteDialog'
 import { Button } from '@/components/ui/button'
 import { UserButton } from '@clerk/nextjs'
 import { Plus } from 'lucide-react'
@@ -43,7 +43,7 @@ const NavBar = () => {
       </div>
 
       {/* Benefit of having open and setOpen is it doesn't clear the input if the component was unmounted */}
-      <AddNoteDialog
+      <AddEditNoteDialog
         open={shadowAddNoteDialog}
         setOpen={setShowAddNoteDialog}
       />
