@@ -47,6 +47,7 @@ const AddEditNoteDialog = ({
     }
   })
 
+  // * Form submit - create / update a note
   async function onSubmit(input: CreateNoteSchemaType) {
     try {
       if (noteToEdit) {
@@ -85,6 +86,7 @@ const AddEditNoteDialog = ({
     }
   }
 
+  // * Delete note function
   async function deleteNote() {
     if (!noteToEdit) return
 
