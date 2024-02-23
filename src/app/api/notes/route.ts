@@ -1,4 +1,6 @@
+import { notesIndex } from '@/lib/db/pinecone'
 import { db } from '@/lib/db/prisma'
+import { getEmbedding } from '@/lib/openai'
 import {
   createNoteSchema,
   deleteNoteSchema,
@@ -26,12 +28,28 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const note = await db.note.create({
-      data: {
-        title,
-        content,
-        userId
-      }
+    // from openai
+    const embedding = await getEmbeddingForNote(title, content)
+
+    // transaction - does multiple db operations and only be applied when all operations succeed
+    const note = await db.$transaction(async tx => {
+      const note = await tx.note.create({
+        data: {
+          title,
+          content,
+          userId
+        }
+      })
+
+      await notesIndex.upsert([
+        {
+          id: note.id,
+          values: embedding,
+          metadata: { userId }
+        }
+      ])
+
+      return note
     })
 
     return Response.json({ note }, { status: 201 })
@@ -71,12 +89,26 @@ export async function PUT(req: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const updatedNote = await db.note.update({
-      where: { id },
-      data: {
-        title,
-        content
-      }
+    const embedding = await getEmbeddingForNote(title, content)
+
+    const updatedNote = await db.$transaction(async tx => {
+      const updatedNote = await tx.note.update({
+        where: { id },
+        data: {
+          title,
+          content
+        }
+      })
+
+      await notesIndex.upsert([
+        {
+          id,
+          values: embedding,
+          metadata: { userId }
+        }
+      ])
+
+      return updatedNote
     })
 
     return Response.json({ updatedNote }, { status: 200 })
@@ -116,8 +148,12 @@ export async function DELETE(req: Request) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    await db.note.delete({
-      where: { id }
+    await db.$transaction(async tx => {
+      await db.note.delete({
+        where: { id }
+      })
+
+      await notesIndex.deleteOne(id)
     })
 
     return Response.json({ message: 'Note deleted' }, { status: 200 })
@@ -125,4 +161,9 @@ export async function DELETE(req: Request) {
     console.error(error)
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
+}
+
+// * Create and embeding when creating or updating a note
+async function getEmbeddingForNote(title: string, content: string | undefined) {
+  return getEmbedding(title + '\n\n' + content ?? '')
 }
