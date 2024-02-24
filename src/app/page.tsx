@@ -15,7 +15,7 @@ export default function Home() {
     <main className='flex h-screen flex-col items-center justify-center gap-5'>
       <div className='flex items-center gap-4'>
         <Image
-          src='/next-note-logo.png'
+          src='/next-note-logo.svg'
           alt='NextNote logo'
           width={100}
           height={100}
