@@ -1,5 +1,6 @@
 'use client'
 
+import AIChatButton from '@/components/AIChatButton'
 import AddEditNoteDialog from '@/components/AddEditNoteDialog'
 import ThemeToggleButton from '@/components/ThemeToggleButton'
 import { Button } from '@/components/ui/button'
@@ -41,6 +42,8 @@ const NavBar = () => {
               <Plus size={20} className='mr-2' />
               Add Note
             </Button>
+
+            <AIChatButton />
           </div>
         </div>
       </div>
