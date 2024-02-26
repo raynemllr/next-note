@@ -10,4 +10,4 @@ const pinecone = new Pinecone({
   apiKey
 })
 
-export const notesIndex = pinecone.Index('next-note')
+export const notesIndex = pinecone.index('next-note')
