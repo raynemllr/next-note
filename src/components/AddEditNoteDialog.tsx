@@ -23,6 +23,7 @@ import { toast } from 'sonner'
 import { useRouter } from 'next/navigation'
 import { Note } from '@prisma/client'
 import { useState } from 'react'
+import { Button } from '@/components/ui/button'
 
 type AddEditNoteDialogProps = {
   open: boolean
@@ -35,7 +36,7 @@ const AddEditNoteDialog = ({
   setOpen,
   noteToEdit
 }: AddEditNoteDialogProps) => {
-  const [deleteInProgress, setDeleteInProgress] = useState(false)
+  const [openConfirmationDelete, setOpenConfirmationDelete] = useState(false)
 
   const router = useRouter()
 
@@ -50,6 +51,18 @@ const AddEditNoteDialog = ({
   // * Form submit - create / update a note
   async function onSubmit(input: CreateNoteSchemaType) {
     try {
+      const hasChanges =
+        JSON.stringify(input) !==
+        JSON.stringify({
+          title: noteToEdit?.title || '',
+          content: noteToEdit?.content || ''
+        })
+
+      if (!hasChanges) {
+        toast.warning('No changes detected. Note not updated.')
+        return
+      }
+
       if (noteToEdit) {
         const response = await fetch('/api/notes', {
           method: 'PUT',
@@ -86,7 +99,98 @@ const AddEditNoteDialog = ({
     }
   }
 
-  // * Delete note function
+  // * Open delete confirmation dialog
+  function deleteConfirmation() {
+    if (!noteToEdit) return
+    setOpenConfirmationDelete(true)
+    setOpen(false)
+  }
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{noteToEdit ? 'Edit note' : 'Add Note'}</DialogTitle>
+          </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
+              <FormField
+                control={form.control}
+                name='title'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Note title</FormLabel>
+                    <FormControl>
+                      <Input placeholder='Note title' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name='content'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Note content</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder='Note content' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter className='gap-1 sm:gap-0'>
+                {noteToEdit && (
+                  <Button
+                    type='button'
+                    variant='destructive'
+                    onClick={deleteConfirmation}
+                    disabled={form.formState.isSubmitting}
+                  >
+                    Delete note
+                  </Button>
+                )}
+                <LoadingButton
+                  type='submit'
+                  disabled={form.formState.isSubmitting}
+                  loading={form.formState.isSubmitting}
+                >
+                  {noteToEdit ? 'Update' : 'Submit'}
+                </LoadingButton>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+
+      {openConfirmationDelete && noteToEdit && (
+        <DeleteConfirmationDialog
+          open={openConfirmationDelete}
+          setOpen={setOpenConfirmationDelete}
+          noteToEdit={noteToEdit}
+        />
+      )}
+    </>
+  )
+}
+
+export default AddEditNoteDialog
+
+// * Confirm delete dialog
+const DeleteConfirmationDialog = ({
+  noteToEdit,
+  open,
+  setOpen
+}: AddEditNoteDialogProps) => {
+  const [deleteInProgress, setDeleteInProgress] = useState(false)
+
+  const router = useRouter()
+
   async function deleteNote() {
     if (!noteToEdit) return
 
@@ -118,64 +222,38 @@ const AddEditNoteDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{noteToEdit ? 'Edit note' : 'Add Note'}</DialogTitle>
+          <DialogTitle>Note delete confirmation</DialogTitle>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-3'>
-            <FormField
-              control={form.control}
-              name='title'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Note title</FormLabel>
-                  <FormControl>
-                    <Input placeholder='Note title' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <p>
+          Are you sure you want to delete &quot;
+          <span className='font-bold'>{noteToEdit?.title}</span>&quot; note?
+        </p>
 
-            <FormField
-              control={form.control}
-              name='content'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Note content</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder='Note content' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className='gap-1 sm:gap-0'>
-              {noteToEdit && (
-                <LoadingButton
-                  type='button'
-                  variant='destructive'
-                  loading={deleteInProgress}
-                  disabled={form.formState.isSubmitting}
-                  onClick={deleteNote}
-                >
-                  Delete note
-                </LoadingButton>
-              )}
+        <DialogFooter className='gap-1 sm:gap-0'>
+          {noteToEdit && (
+            <>
               <LoadingButton
-                type='submit'
-                loading={form.formState.isSubmitting}
+                type='button'
+                variant='destructive'
+                loading={deleteInProgress}
+                disabled={deleteInProgress}
+                onClick={deleteNote}
+              >
+                Yes
+              </LoadingButton>
+
+              <Button
+                type='button'
+                onClick={() => setOpen(false)}
                 disabled={deleteInProgress}
               >
-                Submit
-              </LoadingButton>
-            </DialogFooter>
-          </form>
-        </Form>
+                Cancel
+              </Button>
+            </>
+          )}
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-
-export default AddEditNoteDialog
