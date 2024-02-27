@@ -23,12 +23,13 @@ const NavBar = () => {
               alt='NextNote logo'
               width={40}
               height={40}
+              priority
             />
 
             <span className='font-bold'>NextNote</span>
           </Link>
 
-          <div className='flex items-center gap-4'>
+          <div className='flex items-center gap-3 md:gap-4'>
             <UserButton
               afterSignOutUrl='/'
               appearance={{
