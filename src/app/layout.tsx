@@ -24,7 +24,9 @@ export default function RootLayout({
       <html lang='en' suppressHydrationWarning>
         <body className={inter.className}>
           <ThemeProvider attribute='class' defaultTheme='light'>
-            {children}
+            <div className='dark:bg-grid-small-white/[0.2] bg-grid-small-black/[0.2]'>
+              {children}
+            </div>
             <Toaster richColors />
           </ThemeProvider>
         </body>
