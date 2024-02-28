@@ -15,7 +15,7 @@ const NavBar = () => {
 
   return (
     <>
-      <div className='p-4 shadow'>
+      <div className='sticky left-0 top-0 z-50 border-b bg-background p-4'>
         <div className='m-auto flex max-w-7xl flex-wrap items-center justify-between gap-3'>
           <Link href='/notes' className='flex items-center gap-2'>
             <Image
