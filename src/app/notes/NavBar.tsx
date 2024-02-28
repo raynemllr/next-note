@@ -4,7 +4,7 @@ import AIChatButton from '@/components/AIChatButton'
 import AddEditNoteDialog from '@/components/AddEditNoteDialog'
 import ThemeToggleButton from '@/components/ThemeToggleButton'
 import { Button } from '@/components/ui/button'
-import { UserButton } from '@clerk/nextjs'
+import { SignedIn, UserButton } from '@clerk/nextjs'
 import { Plus } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -14,7 +14,7 @@ const NavBar = () => {
   const [shadowAddNoteDialog, setShowAddNoteDialog] = useState(false)
 
   return (
-    <>
+    <SignedIn>
       <div className='sticky left-0 top-0 z-50 border-b bg-background p-4'>
         <div className='m-auto flex max-w-7xl flex-wrap items-center justify-between gap-3'>
           <Link href='/notes' className='flex items-center gap-2'>
@@ -54,7 +54,7 @@ const NavBar = () => {
         open={shadowAddNoteDialog}
         setOpen={setShowAddNoteDialog}
       />
-    </>
+    </SignedIn>
   )
 }
 export default NavBar
