@@ -2,7 +2,6 @@ import Note from '@/components/Note'
 import { db } from '@/lib/db/prisma'
 import { auth } from '@clerk/nextjs'
 import { Metadata } from 'next'
-import { redirect } from 'next/navigation'
 
 export const metadata: Metadata = {
   title: 'NextNote - Notes'
@@ -12,7 +11,7 @@ export default async function NotesPage() {
   const { userId } = auth()
 
   if (!userId) {
-    redirect('/sign-in')
+    throw Error('userId undefined')
   }
 
   const allNotes = await db.note.findMany({ where: { userId } })
