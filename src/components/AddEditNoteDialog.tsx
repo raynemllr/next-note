@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation'
 import { Note } from '@prisma/client'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type AddEditNoteDialogProps = {
   open: boolean
@@ -123,7 +124,14 @@ const AddEditNoteDialog = ({
                   <FormItem>
                     <FormLabel>Note title</FormLabel>
                     <FormControl>
-                      <Input placeholder='Note title' {...field} />
+                      <Input
+                        placeholder='Note title'
+                        {...field}
+                        className={cn(
+                          form.formState.errors.title &&
+                            'border-red-500 focus-visible:ring-red-500'
+                        )}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
