@@ -48,7 +48,10 @@ const AIChatBox = ({ onClose, open }: AIChatBoxProps) => {
         open ? 'fixed' : 'hidden'
       )}
     >
-      <button onClick={onClose} className='mb-1 ms-auto block'>
+      <button
+        onClick={onClose}
+        className='mb-1 ms-auto block transition duration-150 hover:text-rose-500'
+      >
         <XCircle size={30} />
       </button>
 
