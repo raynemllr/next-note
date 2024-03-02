@@ -2,6 +2,7 @@
 
 import AIChatButton from '@/components/AIChatButton'
 import AddEditNoteDialog from '@/components/AddEditNoteDialog'
+import Logo from '@/components/Logo'
 import ThemeToggleButton from '@/components/ThemeToggleButton'
 import { Button } from '@/components/ui/button'
 import { UserButton } from '@clerk/nextjs'
@@ -18,13 +19,7 @@ const NavBar = () => {
       <div className='sticky left-0 top-0 z-50 border-b bg-background p-4'>
         <div className='m-auto flex max-w-7xl flex-wrap items-center justify-between gap-3'>
           <Link href='/notes' className='flex items-center gap-2'>
-            <Image
-              src='/next-note-logo.svg'
-              alt='NextNote logo'
-              width={40}
-              height={40}
-              priority
-            />
+            <Logo className='size-10' />
 
             <span className='font-bold'>NextNote</span>
           </Link>
