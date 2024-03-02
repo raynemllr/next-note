@@ -24,7 +24,7 @@ export default function RootLayout({
       <html lang='en' suppressHydrationWarning>
         <body className={inter.className}>
           <ThemeProvider attribute='class' defaultTheme='light'>
-            <div className='dark:bg-grid-small-white/[0.2] bg-grid-small-black/[0.2]'>
+            <div className='antialiased bg-grid-black/[0.03] dark:bg-grid-white/[0.02]'>
               {children}
             </div>
             <Toaster richColors />
